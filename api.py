@@ -43,7 +43,8 @@ async def select_table(request: QuestionRequest) -> TableResponse:
         raise HTTPException(status_code=422, detail="Soru boş olamaz.")
 
     tables = await _table_selector.run(request.question)
-    entities = await _entity_resolver.resolve(request.personel_id, request.question, tables) if tables else None
+    entities =  ( await _entity_resolver.resolve(request.personel_id, request.question, tables) if tables else None)
+    
     return TableResponse(
         question=request.question,
         personel_id=request.personel_id,
@@ -59,5 +60,5 @@ async def health() -> dict:
 
 if __name__ == "__main__":
     host = os.getenv("API_HOST", "0.0.0.0")
-    port = int(os.getenv("API_PORT", "8080"))
+    port = int(os.getenv("API_PORT", "11434"))
     uvicorn.run("api:app", host=host, port=port, reload=True)

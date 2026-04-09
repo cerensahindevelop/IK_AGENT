@@ -5,7 +5,8 @@ from typing import TypedDict
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph
 
 from src.schema import SCHEMA_METADATA
@@ -26,12 +27,12 @@ class TableSelectorAgent:
         self._system_prompt = self._load_system_prompt()
         self._graph = self._build_graph()
 
-    def _create_llm(self) -> ChatOpenAI:
-        return ChatOpenAI(
-            model=os.environ["VLLM_MODEL"],
-            base_url=os.environ["VLLM_BASE_URL"],
-            api_key=os.environ["VLLM_API_KEY"],
-            temperature=float(os.environ["VLLM_TEMPERATURE"]),
+    def _create_llm(self) -> ChatOllama:
+        return ChatOllama(
+            model=os.environ["OLLAMA_MODEL"],
+            base_url=os.environ["OLLAMA_BASE_URL"],
+            # api_key=os.environ["VLLM_API_KEY"],
+            temperature=float(os.environ["OLLAMA_TEMPERATURE"]),
         )
 
     @staticmethod

@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+langchain
+# langchain-openai
+langchain-ollama
+python-dotenv
+pydantic
+openai
+streamlit
+ollama

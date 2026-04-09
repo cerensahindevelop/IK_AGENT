@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8080")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8086")
 
 st.set_page_config(page_title="Table Selector Agent", layout="centered")
 st.title("Table Selector Agent")
@@ -48,7 +48,7 @@ elif st.session_state.step == 2:
                 response = requests.post(
                     f"{API_BASE_URL}/select-table",
                     json={"question": question, "personel_id": st.session_state.personel_id},
-                    timeout=30,
+                    timeout=120,
                 )
                 response.raise_for_status()
                 data = response.json()
@@ -60,7 +60,10 @@ elif st.session_state.step == 2:
                     if entities:
                         st.markdown("**Filtre koşulları:**")
                         for e in entities:
-                            st.write(f"→ `{e['table']}`.`{e['column']}` = **{e['value']}**")
+                            if e['column']:
+                                st.write(f"→ `{e['table']}`.`{e['column']}` = **{e['value']}**")
+                            else:
+                                st.write(f"→ `{e['table']}` — **{e['value']}**")
                 else:
                     st.warning("Soruyla eşleşen bir tablo bulunamadı.")
 
