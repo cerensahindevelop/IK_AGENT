@@ -11,7 +11,7 @@ load_dotenv()
 
 app = FastAPI(
     title="Table Selector Agent API",
-    description="Kullanıcı sorusuna göre ilgili veritabanı tablosunu döner.",
+    description="Kullanici sorusuna gore ilgili veritabani tablolarini ve cevap alanlarini dondurur.",
     version="1.0.0",
 )
 
@@ -27,7 +27,14 @@ class QuestionRequest(BaseModel):
 class EntityResolution(BaseModel):
     table: str
     column: str
-    value: str | int
+    value: str | int | float
+
+
+class AppliedFilter(BaseModel):
+    table: str
+    column: str
+    op: str
+    value: str | int | float
 
 
 class TableResponse(BaseModel):
@@ -35,21 +42,23 @@ class TableResponse(BaseModel):
     personel_id: int
     tables: list[str] | None
     entities: list[EntityResolution] | None
+    applied_filters: list[AppliedFilter] | None
 
 
 @app.post("/select-table", response_model=TableResponse)
 async def select_table(request: QuestionRequest) -> TableResponse:
     if not request.question.strip():
-        raise HTTPException(status_code=422, detail="Soru boş olamaz.")
+        raise HTTPException(status_code=422, detail="Soru bos olamaz.")
 
     tables = await _table_selector.run(request.question)
-    entities =  ( await _entity_resolver.resolve(request.personel_id, request.question, tables) if tables else None)
-    
+    resolution = await _entity_resolver.resolve(request.question, tables) if tables else {"answer_fields": None, "applied_filters": None}
+
     return TableResponse(
         question=request.question,
         personel_id=request.personel_id,
         tables=tables,
-        entities=entities,
+        entities=resolution.get("answer_fields"),
+        applied_filters=resolution.get("applied_filters"),
     )
 
 

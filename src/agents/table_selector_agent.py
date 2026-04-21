@@ -31,8 +31,8 @@ class TableSelectorAgent:
         return ChatOllama(
             model=os.environ["OLLAMA_MODEL"],
             base_url=os.environ["OLLAMA_BASE_URL"],
-            # api_key=os.environ["VLLM_API_KEY"],
             temperature=float(os.environ["OLLAMA_TEMPERATURE"]),
+            request_timeout=float(os.environ.get("OLLAMA_REQUEST_TIMEOUT", "60")),
         )
 
     @staticmethod

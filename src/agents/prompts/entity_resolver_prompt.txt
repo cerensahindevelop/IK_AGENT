@@ -1,24 +1,35 @@
-Sen bir veritabanı asistanısın.
-Kullanıcı sorusuna göre aşağıdaki tablonun hangi sütunlarıyla ilgilenildiğini belirle.
+Sen bir veritabani asistanisin.
+Kullanici sorusuna gore asagidaki tablonun hangi sutunlariyla ilgilenildigini belirle.
 
 Tablo: {table_name}
-Sütunlar:
+Sutunlar:
 {column_descriptions}
 
 Kurallar:
-- Sadece JSON döndür, başka hiçbir şey yazma.
-- "filters": kullanıcının soru içinde belirttiği filtre koşulları listesi (tarih aralığı, belirli bir değer vb.)
-- "target": soruda istenen hedef sütun adları listesi
-- "id", "personel_id", "id_person" gibi anahtar sütunları seçme.
-- op değeri: "=", ">=", "<=", ">", "<" olabilir.
+- Sadece JSON dondur, baska hicbir sey yazma.
+- "target": soruda istenen bilgiyi tasiyan sutun adlari.
+- "filters": sorguda gecen filtre kosullari (belirli deger, tarih araligi vb.).
+- "order_by": sonucun siralanacagi sutun adi. Siralama yoksa null.
+- "order": "asc" veya "desc". Siralama yoksa "desc" yaz.
+- "limit": donmesi gereken kayit adedi. Kisit yoksa null.
+- Birincil anahtar ve yabanci anahtar sutunlarini target veya filters icine alma.
+- Sutun adlari icin yalnizca yukarida listelenen sutunlari kullan, baska isim uretme.
+- op degeri: "=", ">=", "<=", ">", "<" olabilir.
+- "en son/guncel/latest/recent" ifadesinde uygun tarih sutunuyla desc + limit=1 kullan.
+- "ilk/en eski/earliest" ifadesinde uygun tarih sutunuyla asc + limit=1 kullan.
+- "en yuksek/en fazla/max" ifadesinde uygun sayisal sutunla desc + limit=1 kullan.
+- "en dusuk/en az/min" ifadesinde uygun sayisal sutunla asc + limit=1 kullan.
 
-Format:
-{{"filters": [{{"col": "sütun_adı", "op": "operatör", "val": "değer"}}], "target": ["sütun_adı"]}}
+Cikti formati:
+{{"filters": [{{"col": "sutun_adi", "op": "operator", "val": "deger"}}], "target": ["sutun_adi"], "order_by": "sutun_adi_veya_null", "order": "desc", "limit": 1}}
 
-Örnekler:
-Soru: "maaşı ne kadar?" → {{"filters": [], "target": ["maas"]}}
-Soru: "soyadı nedir?" → {{"filters": [], "target": ["soyad"]}}
-Soru: "Python eğitimi var mı?" → {{"filters": [{{"col": "egitim_adi", "op": "=", "val": "Python"}}], "target": ["egitim_adi", "tarih"]}}
-Soru: "hafta sonu mesaisi yaptı mı?" → {{"filters": [{{"col": "mesai_tipi", "op": "=", "val": "Hafta Sonu Mesaisi"}}], "target": ["tarih", "mesai_tipi"]}}
-Soru: "yıllık izin kullandı mı?" → {{"filters": [{{"col": "izin_turu", "op": "=", "val": "Yıllık İzin"}}], "target": ["baslangic_tarihi", "bitis_tarihi", "izin_turu"]}}
-Soru: "2026-01-01 ile 2026-04-04 arasında devamsızlığı var mı?" → {{"filters": [{{"col": "tarih", "op": ">=", "val": "2026-01-01"}}, {{"col": "tarih", "op": "<=", "val": "2026-04-04"}}], "target": ["tarih", "durum"]}}
+Yapisal ornekler (sutun adlari temsilidir; gercek sutun adlarini yukaridaki listeden sec):
+
+Basit deger sorgusu:
+Soru: "X degeri ne kadar?" -> {{"filters": [], "target": ["x_sutunu"], "order_by": null, "order": "desc", "limit": null}}
+
+Tarih araligi:
+Soru: "A ile B tarihleri arasindaki kayitlar" -> {{"filters": [{{"col": "tarih_sutunu", "op": ">=", "val": "YYYY-AA-GG"}}, {{"col": "tarih_sutunu", "op": "<=", "val": "YYYY-AA-GG"}}], "target": ["tarih_sutunu", "deger_sutunu"], "order_by": null, "order": "desc", "limit": null}}
+
+En son kayit:
+Soru: "En son izin kullandigi tarih araligi nedir?" -> {{"filters": [], "target": ["baslangic_tarihi", "bitis_tarihi"], "order_by": "bitis_tarihi", "order": "desc", "limit": 1}}

@@ -48,22 +48,27 @@ elif st.session_state.step == 2:
                 response = requests.post(
                     f"{API_BASE_URL}/select-table",
                     json={"question": question, "personel_id": st.session_state.personel_id},
-                    timeout=120,
+                    timeout=180,
                 )
                 response.raise_for_status()
                 data = response.json()
 
                 tables = data.get("tables")
                 entities = data.get("entities") or []
+                applied_filters = data.get("applied_filters") or []
                 if tables:
-                    st.success(f"İlgili tablo(lar): **{', '.join(tables)}**")
-                    if entities:
-                        st.markdown("**Filtre koşulları:**")
-                        for e in entities:
-                            if e['column']:
-                                st.write(f"→ `{e['table']}`.`{e['column']}` = **{e['value']}**")
-                            else:
-                                st.write(f"→ `{e['table']}` — **{e['value']}**")
+                    st.markdown("**İlgili tablo(lar):**")
+                    for t in tables:
+                        st.write(f"→ `{t}`")
+                    if applied_filters or entities:
+                        st.markdown("**İlgili sütunlar:**")
+                    for f in applied_filters:
+                        st.write(f"→ `{f['table']}`.`{f['column']}` {f['op']} **{f['value']}**")
+                    for e in entities:
+                        if e['column']:
+                            st.write(f"→ `{e['table']}`.`{e['column']}` = **{e['value']}**")
+                        else:
+                            st.write(f"→ `{e['table']}` — **{e['value']}**")
                 else:
                     st.warning("Soruyla eşleşen bir tablo bulunamadı.")
 
